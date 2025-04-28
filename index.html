@@ -768,8 +768,6 @@
     </div>
     <div class="switch-container">
       <label>মোট প্রশ্ন সেলেক্ট করো:</label>
-
-
       <label class="switch">
         <input type="checkbox" id="totalQuestionsSwitch" onchange="toggleInputBox('totalQuestionsBox')">
         <span class="slider"></span>
@@ -837,6 +835,14 @@
       <p>ভালো করে দেখে নাও! <br> পরীক্ষা শেষ করতে চাও তো?</p>
       <button class="confirm-btn" onclick="confirmSubmit()">হ্যাঁ</button>
       <button class="cancel-btn" onclick="closePopup('confirmPopup')">না</button>
+    </div>
+  </div>
+
+  <div class="popup" id="invalidInputPopup">
+    <div class="popup-header">ইনপুট ত্রুটি</div>
+    <div class="popup-body">
+      <p id="invalidInputMessage">অনুগ্রহ করে বৈধ সময় এবং প্রশ্ন সংখ্যা নির্বাচন করুন।</p>
+      <button class="popup-close" onclick="closePopup('invalidInputPopup')">ওকে</button>
     </div>
   </div>
 
@@ -1154,18 +1160,23 @@
       if (selectedQuestions.length > 0) {
         startExamSession();
       } else {
-        alert('প্রশ্ন পাওয়া যায়নি! অনুগ্রহ করে অন্য সেটিং বেছে নিন।');
+        document.getElementById('invalidInputMessage').innerText = 'প্রশ্ন পাওয়া যায়নি! অনুগ্রহ করে অন্য সেটিং বেছে নিন।';
+        showPopup('invalidInputPopup');
       }
     }
 
     function startExam() {
       let questionCounts = {};
+      let totalQuestionsValid = false;
+      let examTime = parseInt(document.getElementById('examTime').value) || 0;
+
       if (document.getElementById('totalQuestionsSwitch').checked) {
         const total = parseInt(document.getElementById('totalQuestions').value) || 0;
         if (total > 0) {
           const selectedPapers = ['bioPaper1', 'bioPaper2', 'chemPaper1', 'physPaper1', 'engPaper1', 'gkPaper1'].filter(id => document.getElementById(id)?.checked);
           if (selectedPapers.length === 0) {
-            alert('অনুগ্রহ করে অন্তত একটি পত্র নির্বাচন করুন।');
+            document.getElementById('invalidInputMessage').innerText = 'অনুগ্রহ করে অন্তত একটি পত্র নির্বাচন করুন।';
+            showPopup('invalidInputPopup');
             return;
           }
           const questionsPerPaper = Math.floor(total / selectedPapers.length);
@@ -1173,8 +1184,10 @@
           selectedPapers.forEach((paperId, index) => {
             questionCounts[paperId] = questionsPerPaper + (index < extraQuestions ? 1 : 0);
           });
+          totalQuestionsValid = true;
         } else {
-          alert('অনুগ্রহ করে বৈধ প্রশ্ন সংখ্যা প্রবেশ করান।');
+          document.getElementById('invalidInputMessage').innerText = 'অনুগ্রহ করে বৈধ প্রশ্ন সংখ্যা প্রবেশ করান।';
+          showPopup('invalidInputPopup');
           return;
         }
       } else if (document.getElementById('topicQuestionsSwitch').checked) {
@@ -1186,20 +1199,30 @@
           }
         });
         if (Object.values(questionCounts).every(count => count === 0)) {
-          alert('অনুগ্রহ করে অন্তত একটি পত্রের জন্য প্রশ্ন সংখ্যা নির্বাচন করুন।');
+          document.getElementById('invalidInputMessage').innerText = 'অনুগ্রহ করে অন্তত একটি পত্রের জন্য প্রশ্ন সংখ্যা নির্বাচন করুন।';
+          showPopup('invalidInputPopup');
           return;
         }
+        totalQuestionsValid = true;
       } else {
-        alert('অনুগ্রহ করে প্রশ্ন সংখ্যা নির্বাচনের একটি পদ্ধতি বেছে নিন।');
+        document.getElementById('invalidInputMessage').innerText = 'অনুগ্রহ করে প্রশ্ন সংখ্যা নির্বাচনের একটি পদ্ধতি বেছে নিন।';
+        showPopup('invalidInputPopup');
         return;
       }
 
-      timeLeft = (parseInt(document.getElementById('examTime').value) || 60) * 60;
+      if (examTime <= 0) {
+        document.getElementById('invalidInputMessage').innerText = 'অনুগ্রহ করে বৈধ সময় (মিনিটে) প্রবেশ করান।';
+        showPopup('invalidInputPopup');
+        return;
+      }
+
+      timeLeft = examTime * 60;
       selectQuestions(questionCounts, false);
       if (selectedQuestions.length > 0) {
         startExamSession();
       } else {
-        alert('প্রশ্ন পাওয়া যায়নি! অনুগ্রহ করে অন্য সেটিং বেছে নিন।');
+        document.getElementById('invalidInputMessage').innerText = 'প্রশ্ন পাওয়া যায়নি! অনুগ্রহ করে অন্য সেটিং বেছে নিন।';
+        showPopup('invalidInputPopup');
       }
     }
 
@@ -1209,6 +1232,7 @@
       generateQuestions();
       startTimer();
       initializeChart();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function startTimer() {
