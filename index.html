@@ -1,361 +1,1458 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 
 <head>
+  <script>
+    document.addEventListener("contextmenu", (event) => event.preventDefault());
+    document.addEventListener("keydown", (event) => {
+      if (event.ctrlKey && ["u", "s", "i", "j"].includes(event.key.toLowerCase()) ||
+        event.key === "F12") {
+        event.preventDefault();
+      }
+    });
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BRAINIAC ACADEMICS</title>
-  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet">
+  <title>Login & Online Exam</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+
     * {
       font-family: "Hind Siliguri", sans-serif;
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
     }
 
     body {
-      background-color: white;
-      color: #1b0b54;
-      position: relative;
-    }
-
-    /* Splash Screen */
-    #splash {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100vh;
-      background-color: white;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
       display: flex;
-      align-items: center;
       justify-content: center;
-      z-index: 2000;
-    }
-
-    #splash img {
-      width: 300px;
-      height: auto;
-      animation: fadeIn 1s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      0% {
-        opacity: 0;
-        transform: scale(0.9);
-      }
-
-      100% {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    .fade-out {
-      animation: fadeOut 1s forwards;
-    }
-
-    @keyframes fadeOut {
-      from {
-        opacity: 1;
-      }
-
-      to {
-        opacity: 0;
-        visibility: hidden;
-      }
-    }
-
-    /* Fixed Header */
-    .header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      display: flex;
       align-items: center;
-      justify-content: space-between;
-      background: white;
-      padding: 10px 20px;
-      box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
-      z-index: 1000;
+      height: 100vh;
+      position: relative;
+      overflow: auto;
     }
 
-    .menu-bar {
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      z-index: 1100;
-    }
-
-    .menu-bar div {
-      width: 30px;
-      height: 4px;
-      background-color: #1b0b54;
-      transition: 0.3s;
-    }
-
-    /* Notice Image */
-    .notice-img {
-      width: 40px;
-      /* Adjusted for header fit */
-      height: auto;
-      cursor: pointer;
-      z-index: 1100;
-      transition: transform 0.3s;
-    }
-
-    .notice-img:hover {
-      transform: scale(1.1);
-      /* Slight hover effect */
-    }
-
-    .site-name {
-      font-size: 24px;
-      font-style: italic;
-      font-weight: bold;
-      text-align: center;
-      line-height: 1.1;
-    }
-
-    .site-name span {
-      display: block;
-    }
-
-    /* Sidebar Menu */
-    .menu {
-      position: fixed;
-      top: 0;
-      left: -250px;
-      width: 250px;
-      height: 100%;
+    .login-container {
       background-color: white;
-      padding-top: 50px;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
-      transition: 0.3s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 1200;
-    }
-
-    /* Notification Panel */
-    .notification-panel {
-      position: fixed;
-      top: 0;
-      right: -300px;
-      width: 300px;
-      height: 100%;
-      background-color: white;
-      padding: 50px 20px 20px;
-      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
-      transition: 0.3s;
-      z-index: 1200;
-      overflow-y: auto;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 35px;
-      color: #1b0b54;
-      cursor: pointer;
-      font-weight: bold;
-      transition: 0.3s;
-      user-select: none;
-    }
-
-    .close-btn:hover {
-      transform: scale(1.2);
-    }
-
-    .menu a {
-      display: block;
-      width: 200px;
-      padding: 12px;
-      font-size: 18px;
-      color: #1b0b54;
-      background-color: white;
-      text-align: center;
-      text-decoration: none;
-      border: 1px solid #1b0b54;
-      margin: 8px 0;
-      border-radius: 5px;
-      transition: 0.3s;
-      white-space: nowrap;
-    }
-
-    .menu a:hover {
-      background-color: #1b0b54;
-      color: white;
-    }
-
-    /* Notification Styles */
-    .notification {
-      margin-bottom: 20px;
-      padding: 10px;
-      border-bottom: 1px solid #e0e0e0;
-    }
-
-    .notification h3 {
-      font-size: 18px;
-      font-weight: bold;
-      color: #1b0b54;
-      margin-bottom: 5px;
-    }
-
-    .notification .time {
-      font-size: 14px;
-      color: #555;
-      margin-bottom: 10px;
-      font-style: italic;
-    }
-
-    .notification p {
-      font-size: 16px;
-      color: #333;
-      line-height: 1.4;
-      font-weight: normal;
-    }
-
-    .container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: white;
-      padding: 30px;
+      padding: 20px;
       border-radius: 10px;
-      box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
-      max-width: 500px;
-      width: 90%;
-      text-align: left;
-      margin-top: 350px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      display: none;
+      z-index: 1;
+    }
+
+    .login-container.active {
+      display: flex;
     }
 
     h1 {
+      color: #1b0b54;
+      margin-bottom: 20px;
+    }
+
+    .login-container input {
+      width: 80%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    .login-container button {
+      padding: 15px 30px;
+      background-color: #1b0b54;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+      width: 50%;
+      margin-top: 20px;
+      transition: background-color 0.3s ease;
+    }
+
+    .login-container button:hover {
+      background-color: #2a1a6b;
+    }
+
+    .error {
+      color: #1b0b54;
+      margin-top: 10px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      display: none;
+      z-index: 1;
+    }
+
+    .setting-container.active,
+    .exam-container.active {
+      display: block;
+    }
+
+    .exam-content {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      color: #1b0b54;
+    }
+
+    #timer {
+      font-size: 20px;
+      color: #1b0b54;
+      margin-bottom: 5px;
+      font-weight: normal;
+      text-align: center;
+    }
+
+    #exam-info {
+      font-size: 16px;
+      color: black;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #exam {
+      width: 100%;
+    }
+
+    .chart-container {
+      width: 200px;
+      height: 200px;
+      margin: 10px auto;
+      background-color: #f9f9f9;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: none;
+      padding: 10px;
+      z-index: 1;
+    }
+
+    .chart-container.visible {
+      display: block;
+    }
+
+    .question-container {
+      text-align: left;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .question-container.visible {
+      display: block;
+    }
+
+    .question-label {
+      font-weight: bold;
+    }
+
+    .option {
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 5px;
+    }
+
+    .circle {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid #1b0b54;
+      margin-right: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #1b0b54;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .selected .circle {
+      background-color: #1b0b54;
+      color: white;
+    }
+
+    .correct-text {
+      color: green !important;
+    }
+
+    .incorrect-text {
+      color: #ff0800 !important;
+    }
+
+    #submitBtn {
+      padding: 15px 30px;
+      background-color: #1b0b54;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 10px;
+      margin-top: 20px;
+      width: 200px;
+      transition: background-color 0.3s ease;
+    }
+
+    .submitBtn:hover {
+      background-color: #2a1a6b;
+    }
+
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 20px;
+      width: 300px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      text-align: center;
+      display: none;
+      z-index: 1000;
+    }
+
+    .popup-header {
+      background-color: #1b0b54;
+      color: white;
+      padding: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 10px 10px 0 0;
+    }
+
+    .popup-body {
+      padding: 15px;
+    }
+
+    .popup-body p {
+      margin: 10px 0;
+    }
+
+    .popup-close {
+      background-color: #1b0b54;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+
+    .popup-close:hover {
+      background-color: #2a1a6b;
+    }
+
+    .confirm-btn {
+      background-color: #34c759;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      border-radius: 5px;
+      margin: 5px;
+    }
+
+    .confirm-btn:hover {
+      background-color: #2eb347;
+    }
+
+    .cancel-btn {
+      background-color: #ff3b30;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      border-radius: 5px;
+      margin: 5px;
+    }
+
+    .cancel-btn:hover {
+      background-color: #e02b21;
+    }
+
+    .explanation-dropdown {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .explanation-dropdown.visible {
+      display: block;
+    }
+
+    .explanation-btn {
+      background-color: #1b0b54;
+      color: white;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 40%;
+      text-align: left;
+      position: relative;
+    }
+
+    .explanation-btn:hover {
+      background-color: #2a1a6b;
+    }
+
+    .explanation-btn::after {
+      content: '▼';
+      position: absolute;
+      right: 10px;
+      font-size: 12px;
+    }
+
+    .explanation-btn.active::after {
+      content: '▲';
+    }
+
+    .explanation-content {
+      display: none;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+      color: #000000;
+      text-align: left;
+      max-height: 450px;
+      overflow-y: auto;
+      margin-top: 5px;
+    }
+
+    .explanation-content.visible {
+      display: block;
+    }
+
+    .explanation-content p {
+      margin: 0 0 10px 0;
+    }
+
+    .explanation-content ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .explanation-content li {
+      margin-bottom: 5px;
+    }
+
+    .explanation-content strong {
+      color: #1b0b54;
+    }
+
+    .explanation-label {
+      font-weight: bold;
+      color: #1b0b54;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .dropdown-container {
+      margin: 20px 0;
+      text-align: left;
+    }
+
+    .dropdown-btn {
+      background-color: #1b0b54;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      width: 100%;
+      text-align: left;
+      font-size: 16px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .dropdown-btn:hover {
+      background-color: #2a1a6b;
+    }
+
+    .dropdown-btn::after {
+      content: '▼';
+      position: absolute;
+      right: 10px;
+    }
+
+    .dropdown-btn.active::after {
+      content: '▲';
+    }
+
+    .dropdown-content {
+      display: none;
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-top: 5px;
+      padding: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .dropdown-content.visible {
+      display: block;
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      padding: 5px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .dropdown-item input[type="checkbox"] {
+      margin-right: 10px;
+    }
+
+    .dropdown-item label {
+      flex-grow: 1;
+    }
+
+    .dropdown-item .arrow {
+      cursor: pointer;
+      font-size: 12px;
+      margin-left: 10px;
+      color: #1b0b54;
+    }
+
+    .dropdown-item .arrow.active::after {
+      content: '▲';
+    }
+
+    .dropdown-item .arrow::after {
+      content: '▼';
+    }
+
+    .sub-items {
+      margin-left: 20px;
+      border-top: 2px solid #1b0b54;
+      padding-top: 10px;
+    }
+
+    .switch-container {
+      margin: 20px 0;
+      text-align: left;
+    }
+
+    .switch-container label {
       font-weight: bold;
       color: #1b0b54;
     }
 
-    p {
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+      margin-left: 10px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked+.slider {
+      background-color: #1b0b54;
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(26px);
+    }
+
+    .input-box {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .input-box.visible {
+      display: block;
+    }
+
+    .input-box input {
+      width: 150px;
+      padding: 8px;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .time-setting {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 20px 0;
+    }
+
+    .time-setting label {
       font-weight: bold;
-      font-size: 18px;
-      color: #000000;
+      color: #1b0b54;
+    }
+
+    .time-setting input {
+      width: 100px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
     }
 
     .button {
-      display: inline-block;
-      padding: 10px 20px;
+      padding: 15px;
       background-color: #1b0b54;
       color: white;
-      text-decoration: none;
-      font-weight: bold;
+      border: none;
       border-radius: 5px;
+      cursor: pointer;
       font-size: 16px;
-      text-align: center;
+      width: 100%;
+      margin: 10px 0;
+      transition: background-color 0.3s ease;
+    }
+
+    .start-button {
+      font-size: 20px;
+      width: 50%;
+      margin: 10px auto;
     }
 
     .button:hover {
-      background-color: #1b0b54;
-    }
-
-    .button-container {
-      display: flex;
-      justify-content: center;
-      margin-top: 15px;
+      background-color: #2a1a6b;
     }
   </style>
 </head>
 
 <body>
-
-  <!-- Splash Screen -->
-  <div id="splash">
-    <img
-      src="https://media-hosting.imagekit.io/7beaf277a9c4490b/logo.png?Expires=1840158533&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=upbpX63kvfO7tk4iH5idIHAazvNJrCwQaBlu2h93MbFppSZnmmaUVFueydeeg9S0hR3FWozNCbGdZzoYmrx0XgAFBKgSUp9kR5cEhxeZpgAhYmZuHWTMVHV7zZYpq00XeoFQOzzFsLYZFhTIuvUQw8YVS7CEnYwt4iTXEo8WDMhI1E4wajoxttFFyTK~pW6C6LowoDGAUEtHuruDcnZGlPKDeXaVMWMeW3T0bHRP~rdz0ivLU0niq8Qde3OV~RPSeQ~euv4ie51E5DJqFE6HU8KgBavTUu8HajqOT7VQXOuCuty2D1bvX9UO5i~F2OoZ~kidmCilFckwy~E5y29j~w__"
-      alt="Splash Image">
+  <div class="login-container active" id="loginPage">
+    <h1>তথ্য দাও</h1>
+    <input type="text" id="userID" placeholder="রোল নাম্বার" required>
+    <input type="password" id="password" placeholder="সিরিয়াল নাম্বার" required>
+    <button onclick="validateLogin()">শুরু করো</button>
+    <p class="error" id="errorMessage"></p>
   </div>
 
-  <!-- Sidebar Menu -->
-  <div class="menu" id="sideMenu">
-    <span class="close-btn" onclick="toggleMenu()">×</span>
-    <h2>মেনুবার</h2>
-    <a href="#">ফ্রি ডেমো এক্স্যাম</a>
-    <a href="#">টপিকভিত্তিক প্রস্তুতি</a>
-    <a href="#">ডেইলি এক্স্যাম</a>
-    <a href="#">মেগা এক্স্যাম</a>
-    <a href="#">ম্যাটারিয়ালস</a>
-    <a href="#">যোগাযোগ করো</a>
-    <a href="#">অন্যান্য</a>
+  <div class="container setting-container" id="settingPage">
+    <h1>মক এক্সাম সেটিং</h1>
+    <button class="button" onclick="showMedicalStandardPopup()">সম্পূর্ণ মেডিকেল স্ট্যান্ডার্ড</button>
+    <div class="dropdown-container">
+      <button class="dropdown-btn" onclick="toggleDropdown('topicDropdown')">টপিক সিলেক্ট করুন</button>
+      <div class="dropdown-content" id="topicDropdown">
+        <div class="dropdown-item" data-level="subject">
+          <input type="checkbox" id="biology" onchange="toggleSelect('biology', this.checked); updateTopicQuestions()">
+          <label for="biology">জীববিজ্ঞান</label>
+          <span class="arrow" onclick="toggleSubItems('biology', this)"></span>
+        </div>
+        <div class="sub-items biology" style="display: none;">
+          <div class="dropdown-item" data-level="paper">
+            <input type="checkbox" id="bioPaper1"
+              onchange="toggleSelect('bioPaper1', this.checked); updateTopicQuestions()">
+            <label for="bioPaper1">জীববিজ্ঞান প্রথম পত্র</label>
+            <span class="arrow" onclick="toggleSubItems('bioPaper1', this)"></span>
+          </div>
+          <div class="sub-items bioPaper1" style="display: none;">
+            <div class="dropdown-item" data-level="chapter">
+              <input type="checkbox" id="bioPaper1Ch1"
+                onchange="toggleSelect('bioPaper1Ch1', this.checked); updateTopicQuestions()">
+              <label for="bioPaper1Ch1">কোষ ও এর গঠন</label>
+              <span class="arrow" onclick="toggleSubItems('bioPaper1Ch1', this)"></span>
+            </div>
+            <div class="sub-items bioPaper1Ch1" style="display: none;">
+              <div class="dropdown-item" data-level="topic">
+                <input type="checkbox" id="bioPaper1Ch1T1" onchange="updateTopicQuestions()">
+                <label for="bioPaper1Ch1T1">কোষের প্রকারভেদ</label>
+              </div>
+            </div>
+            <div class="dropdown-item" data-level="chapter">
+              <input type="checkbox" id="bioPaper1Ch2"
+                onchange="toggleSelect('bioPaper1Ch2', this.checked); updateTopicQuestions()">
+              <label for="bioPaper1Ch2">কোষ বিভাজন</label>
+              <span class="arrow" onclick="toggleSubItems('bioPaper1Ch2', this)"></span>
+            </div>
+            <div class="sub-items bioPaper1Ch2" style="display: none;">
+              <div class="dropdown-item" data-level="topic">
+                <input type="checkbox" id="bioPaper1Ch2T1" onchange="updateTopicQuestions()">
+                <label for="bioPaper1Ch2T1">মাইটোসিস</label>
+              </div>
+            </div>
+          </div>
+          <div class="dropdown-item" data-level="paper">
+            <input type="checkbox" id="bioPaper2"
+              onchange="toggleSelect('bioPaper2', this.checked); updateTopicQuestions()">
+            <label for="bioPaper2">জীববিজ্ঞান দ্বিতীয় পত্র</label>
+            <span class="arrow" onclick="toggleSubItems('bioPaper2', this)"></span>
+          </div>
+          <div class="sub-items bioPaper2" style="display: none;">
+            <div class="dropdown-item" data-level="chapter">
+              <input type="checkbox" id="bioPaper2Ch1"
+                onchange="toggleSelect('bioPaper2Ch1', this.checked); updateTopicQuestions()">
+              <label for="bioPaper2Ch1">জিনতত্ত্ব</label>
+              <span class="arrow" onclick="toggleSubItems('bioPaper2Ch1', this)"></span>
+            </div>
+            <div class="sub-items bioPaper2Ch1" style="display: none;">
+              <div class="dropdown-item" data-level="topic">
+                <input type="checkbox" id="bioPaper2Ch1T1" onchange="updateTopicQuestions()">
+                <label for="bioPaper2Ch1T1">ডিএনএ গঠন</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="dropdown-item" data-level="subject">
+          <input type="checkbox" id="chemistry"
+            onchange="toggleSelect('chemistry', this.checked); updateTopicQuestions()">
+          <label for="chemistry">রসায়ন</label>
+          <span class="arrow" onclick="toggleSubItems('chemistry', this)"></span>
+        </div>
+        <div class="sub-items chemistry" style="display: none;">
+          <div class="dropdown-item" data-level="paper">
+            <input type="checkbox" id="chemPaper1"
+              onchange="toggleSelect('chemPaper1', this.checked); updateTopicQuestions()">
+            <label for="chemPaper1">রসায়ন প্রথম পত্র</label>
+            <span class="arrow" onclick="toggleSubItems('chemPaper1', this)"></span>
+          </div>
+          <div class="sub-items chemPaper1" style="display: none;">
+            <div class="dropdown-item" data-level="chapter">
+              <input type="checkbox" id="chemPaper1Ch1"
+                onchange="toggleSelect('chemPaper1Ch1', this.checked); updateTopicQuestions()">
+              <label for="chemPaper1Ch1">পর্যায় সারণি</label>
+              <span class="arrow" onclick="toggleSubItems('chemPaper1Ch1', this)"></span>
+            </div>
+            <div class="sub-items chemPaper1Ch1" style="display: none;">
+              <div class="dropdown-item" data-level="topic">
+                <input type="checkbox" id="chemPaper1Ch1T1" onchange="updateTopicQuestions()">
+                <label for="chemPaper1Ch1T1">মৌলের বিন্যাস</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="dropdown-item" data-level="subject">
+          <input type="checkbox" id="physics" onchange="toggleSelect('physics', this.checked); updateTopicQuestions()">
+          <label for="physics">পদার্থবিজ্ঞান</label>
+          <span class="arrow" onclick="toggleSubItems('physics', this)"></span>
+        </div>
+        <div class="sub-items physics" style="display: none;">
+          <div class="dropdown-item" data-level="paper">
+            <input type="checkbox" id="physPaper1"
+              onchange="toggleSelect('physPaper1', this.checked); updateTopicQuestions()">
+            <label for="physPaper1">পদার্থবিজ্ঞান প্রথম পত্র</label>
+            <span class="arrow" onclick="toggleSubItems('physPaper1', this)"></span>
+          </div>
+          <div class="sub-items physPaper1" style="display: none;">
+            <div class="dropdown-item" data-level="chapter">
+              <input type="checkbox" id="physPaper1Ch1"
+                onchange="toggleSelect('physPaper1Ch1', this.checked); updateTopicQuestions()">
+              <label for="physPaper1Ch1">গতিবিদ্যা</label>
+              <span class="arrow" onclick="toggleSubItems('physPaper1Ch1', this)"></span>
+            </div>
+            <div class="sub-items physPaper1Ch1" style="display: none;">
+              <div class="dropdown-item" data-level="topic">
+                <input type="checkbox" id="physPaper1Ch1T1" onchange="updateTopicQuestions()">
+                <label for="physPaper1Ch1T1">নিউটনের সূত্র</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="dropdown-item" data-level="subject">
+          <input type="checkbox" id="english" onchange="toggleSelect('english', this.checked); updateTopicQuestions()">
+          <label for="english">ইংরেজি</label>
+          <span class="arrow" onclick="toggleSubItems('english', this)"></span>
+        </div>
+        <div class="sub-items english" style="display: none;">
+          <div class="dropdown-item" data-level="paper">
+            <input type="checkbox" id="engPaper1"
+              onchange="toggleSelect('engPaper1', this.checked); updateTopicQuestions()">
+            <label for="engPaper1">ইংরেজি প্রথম পত্র</label>
+            <span class="arrow" onclick="toggleSubItems('engPaper1', this)"></span>
+          </div>
+          <div class="sub-items engPaper1" style="display: none;">
+            <div class="dropdown-item" data-level="chapter">
+              <input type="checkbox" id="engPaper1Ch1"
+                onchange="toggleSelect('engPaper1Ch1', this.checked); updateTopicQuestions()">
+              <label for="engPaper1Ch1">Vocabulary</label>
+              <span class="arrow" onclick="toggleSubItems('engPaper1Ch1', this)"></span>
+            </div>
+            <div class="sub-items engPaper1Ch1" style="display: none;">
+              <div class="dropdown-item" data-level="topic">
+                <input type="checkbox" id="engPaper1Ch1T1" onchange="updateTopicQuestions()">
+                <label for="engPaper1Ch1T1">Synonyms</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="dropdown-item" data-level="subject">
+          <input type="checkbox" id="generalKnowledge"
+            onchange="toggleSelect('generalKnowledge', this.checked); updateTopicQuestions()">
+          <label for="generalKnowledge">সাধারণ জ্ঞান</label>
+          <span class="arrow" onclick="toggleSubItems('generalKnowledge', this)"></span>
+        </div>
+        <div class="sub-items generalKnowledge" style="display: none;">
+          <div class="dropdown-item" data-level="paper">
+            <input type="checkbox" id="gkPaper1"
+              onchange="toggleSelect('gkPaper1', this.checked); updateTopicQuestions()">
+            <label for="gkPaper1">সাধারণ জ্ঞান প্রথম পত্র</label>
+            <span class="arrow" onclick="toggleSubItems('gkPaper1', this)"></span>
+          </div>
+          <div class="sub-items gkPaper1" style="display: none;">
+            <div class="dropdown-item" data-level="chapter">
+              <input type="checkbox" id="gkPaper1Ch1"
+                onchange="toggleSelect('gkPaper1Ch1', this.checked); updateTopicQuestions()">
+              <label for="gkPaper1Ch1">বাংলাদেশ বিষয়ক</label>
+              <span class="arrow" onclick="toggleSubItems('gkPaper1Ch1', this)"></span>
+            </div>
+            <div class="sub-items gkPaper1Ch1" style="display: none;">
+              <div class="dropdown-item" data-level="topic">
+                <input type="checkbox" id="gkPaper1Ch1T1" onchange="updateTopicQuestions()">
+                <label for="gkPaper1Ch1T1">জাতীয় প্রতীক</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="switch-container">
+      <label>মোট প্রশ্ন সেলেক্ট করো:</label>
+      <label class="switch">
+        <input type="checkbox" id="totalQuestionsSwitch" onchange="toggleInputBox('totalQuestionsBox')">
+        <span class="slider"></span>
+      </label>
+      <div class="input-box" id="totalQuestionsBox">
+        <input type="number" id="totalQuestions" placeholder="প্রশ্ন সংখ্যা" min="1">
+      </div>
+    </div>
+    <div class="switch-container">
+      <label>বিষয়ভিত্তিক প্রশ্ন সিলেক্ট করুন:</label>
+      <label class="switch">
+        <input type="checkbox" id="topicQuestionsSwitch" onchange="toggleInputBox('topicQuestionsBox')">
+        <span class="slider"></span>
+      </label>
+      <div class="input-box" id="topicQuestionsBox">
+        <div id="topicQuestionsInputs"></div>
+      </div>
+    </div>
+    <div class="time-setting">
+      <label>টাইম সেট করুন:</label>
+      <input type="number" id="examTime" placeholder="মিনিট" min="1">
+    </div>
+    <button class="button start-button" onclick="startExam()">এক্সাম শুরু করুন</button>
   </div>
 
-  <!-- Notification Panel -->
-  <div class="notification-panel" id="notificationPanel">
-    <span class="close-btn" onclick="toggleNotifications()">×</span>
-    <h2>নোটিশ সমূহ</h2>
-    <!-- Sample Notifications (Edit as needed) -->
-
-    <div class="notification">
-      <h3>ডেমো এক্স্যাম ফ্রি</h3>
-      <div class="time">১১ এপ্রিল, ২০২৫, সকাল ৯:০০</div>
-      <p>আগামী সপ্তাহে ডেমো এক্স্যাম ফ্রি। সুযোগ হাতছাড়া করবেন না!</p>
+  <div class="popup" id="medicalStandardPopup">
+    <div class="popup-header">কনফার্ম করো</div>
+    <div class="popup-body">
+      <p>তুমি শিওর তুমি দিবে?</p>
+      <button class="confirm-btn" onclick="startMedicalExam()">হ্যাঁ</button>
+      <button class="cancel-btn" onclick="closePopup('medicalStandardPopup')">না</button>
     </div>
   </div>
 
-  <!-- Header -->
-  <div class="header">
-    <div class="menu-bar" onclick="toggleMenu()">
-      <div></div>
-      <div></div>
-      <div></div>
+  <div class="container exam-container" id="examContainer">
+    <div class="exam-content">
+      <h1>মক এক্সাম</h1>
+      <div id="timer">৬০ মিনিট ০ সেকেন্ড</div>
+      <div id="exam-info">পূর্ণ নম্বরঃ ০</div>
+      <div class="chart-container">
+        <canvas id="scoreChart"></canvas>
+      </div>
+      <div id="exam"></div>
+      <button id="submitBtn" onclick="showPopup('confirmPopup')">সাবমিট</button>
     </div>
-    <div class="site-name">
-      <span>MEDICAL</span>
-      <span>PROSTUTI</span>
-    </div>
-    <img class="notice-img"
-      src="https://media-hosting.imagekit.io/81d2d678f7ed405e/BRAINIAC_ACAD_MICS__4_-removebg-preview.png?Expires=1839319984&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=cl6yEvcnqEPqUr3Y~iAT0mI2b9JQzATT6~9Twai8DNMvkOaKY0h3Pi3~yb~0TmZccELUjVEHgk6hdzoBU5jWI4ZsUBuTbtPPg3l~1ursnmzNSyJUhENxCGZ-wZFLRVEx24CAewPSZlzN-zYeWfWoU2swVic4WbeIwWvR70K0bHepooa5i~zzGjTd0Dlxer7s3lgfFOSwwj1iwuGYMhdmxwC~XdKtC9709BzhNAMr1tH8Yg5SNAtx1hhhh97yomZP3dIvNg~Uezar5c~7bsA6TMNuZQqeNk-lNBXhsl-yvVOVrBrOJqUe3HSCDy4Z-Ns9aQgoCsm~aF9bKMkEkHNGWw__"
-      alt="Notice Icon" onclick="toggleNotifications()">
   </div>
 
-  <!-- Main Content -->
-  <div class="container">
-    <h2>আসসালামু আলাইকুম!</h2>
-    <p>মেডিকেল ভর্তি পরীক্ষাসহ যেকোনো ভর্তি পরীক্ষায় কাঙ্খিত ফলাফল পেতে নিয়মিত পরীক্ষা দেওয়ার কোনো বিকল্প নেই।
-      আর তুমি যদি চাও স্বপ্নের মেডিকেলে একটি সিট কনফার্ম করতে, তাহলে নিয়মিত পরীক্ষা দিয়ে নিজেকে যাচাই করো!</p>
-    <div class="button-container">
-      <a href="https://ullas12345.github.io/exampage.github.io/" class="button">শুরু করো</a>
+  <div class="popup" id="scorePopup">
+    <div class="popup-header">তোমার স্কোর</div>
+    <div class="popup-body">
+      <p><strong>মোট প্রশ্ন:</strong> <span id="totalQuestions"></span></p>
+      <p><strong>উত্তর দিয়েছো:</strong> <span style="color: #000000;" id="answered"></span></p>
+      <p><strong>সঠিক উত্তর:</strong> <span style="color: #0ab853;" id="correctAnswers"></span></p>
+      <p><strong>ভুল উত্তর:</strong> <span style="color: #f81010;" id="wrongAnswers"></span></p>
+      <p><strong>অনুত্তরিত:</strong> <span id="unanswered"></span></p>
+      <p><strong>তোমার চূড়ান্ত স্কোর:</strong></p>
+      <h2 style="color: #1b0b54;"><span id="finalScore"></span></h2>
+      <button class="popup-close" onclick="closePopup('scorePopup')">ওকে</button>
+    </div>
+  </div>
+
+  <div class="popup" id="confirmPopup">
+    <div class="popup-header">কনফার্ম করো</div>
+    <div class="popup-body">
+      <p>ভালো করে দেখে নাও! <br> পরীক্ষা শেষ করতে চাও তো?</p>
+      <button class="confirm-btn" onclick="confirmSubmit()">হ্যাঁ</button>
+      <button class="cancel-btn" onclick="closePopup('confirmPopup')">না</button>
     </div>
   </div>
 
   <script>
-    function toggleMenu() {
-      const menu = document.getElementById('sideMenu');
-      const notificationPanel = document.getElementById('notificationPanel');
-      notificationPanel.style.right = '-300px';
-      menu.style.left = menu.style.left === '0px' ? '-250px' : '0px';
+    const users = [
+      { id: "ullas", pass: "ullas" },
+      { id: "5430192", pass: "120984" }
+    ];
+
+    const questions = {
+      biology: {
+        paper1: {
+          chapter1: {
+            topic1: [
+              {
+                id: 1,
+                question: "কোষের পাওয়ার হাউস কোনটি?",
+                options: { A: "নিউক্লিয়াস", B: "মাইটোকন্ড্রিয়ন", C: "রাইবোজোম", D: "লাইসোজোম" },
+                correct: "B",
+                explanation: `<p>মাইটোকন্ড্রিয়ন কোষের পাওয়ার হাউস হিসেবে পরিচিত কারণ এটি ATP উৎপন্ন করে।</p>`
+              },
+              {
+                id: 2,
+                question: "প্রোক্যারিওটিক কোষের বৈশিষ্ট্য কোনটি?",
+                options: { A: "নিউক্লিয়াস থাকে", B: "নিউক্লিয়াস থাকে না", C: "মাইটোকন্ড্রিয়া থাকে", D: "গলজি বডি থাকে" },
+                correct: "B",
+                explanation: `<p>প্রোক্যারিওটিক কোষে নিউক্লিয়াস থাকে না।</p>`
+              }
+            ]
+          },
+          chapter2: {
+            topic1: [
+              {
+                id: 3,
+                question: "মাইটোসিস প্রক্রিয়ায় কোষ বিভাজনের কয়টি ধাপ আছে?",
+                options: { A: "৩টি", B: "৪টি", C: "৫টি", D: "৬টি" },
+                correct: "B",
+                explanation: `<p>মাইটোসিসের চারটি ধাপ: প্রোফেজ, মেটাফেজ, অ্যানাফেজ, টেলোফেজ।</p>`
+              }
+            ]
+          }
+        },
+        paper2: {
+          chapter1: {
+            topic1: [
+              {
+                id: 4,
+                question: "ডিএনএ-এর পূর্ণরূপ কী?",
+                options: { A: "ডিঅক্সিরাইবোনিউক্লিক অ্যাসিড", B: "ডিঅক্সিনিউক্লিক অ্যাসিড", C: "ডায়নিউক্লিক অ্যাসিড", D: "ডিঅক্সিরাইবোনিক অ্যাসিড" },
+                correct: "A",
+                explanation: `<p>ডিএনএ-এর পূর্ণরূপ হলো ডিঅক্সিরাইবোনিউক্লিক অ্যাসিড।</p>`
+              }
+            ]
+          }
+        }
+      },
+      chemistry: {
+        paper1: {
+          chapter1: {
+            topic1: [
+              {
+                id: 5,
+                question: "পর্যায় সারণির প্রথম মৌল কোনটি?",
+                options: { A: "হিলিয়াম", B: "হাইড্রোজেন", C: "লিথিয়াম", D: "বেরিলিয়াম" },
+                correct: "B",
+                explanation: `<p>হাইড্রোজেন (H) পর্যায় সারণির প্রথম মৌল।</p>`
+              }
+            ]
+          }
+        }
+      },
+      physics: {
+        paper1: {
+          chapter1: {
+            topic1: [
+              {
+                id: 6,
+                question: "নিউটনের প্রথম সূত্র কী নির্দেশ করে?",
+                options: { A: "জড়তা", B: "ত্বরণ", C: "বল", D: "শক্তি" },
+                correct: "A",
+                explanation: `<p>নিউটনের প্রথম সূত্র জড়তার সূত্র হিসেবে পরিচিত।</p>`
+              }
+            ]
+          }
+        }
+      },
+      english: {
+        paper1: {
+          chapter1: {
+            topic1: [
+              {
+                id: 7,
+                question: "Choose the correct synonym of 'Big':",
+                options: { A: "Small", B: "Large", C: "Tiny", D: "Short" },
+                correct: "B",
+                explanation: `<p>'Big' এর সমার্থক শব্দ হলো 'Large'।</p>`
+              }
+            ]
+          }
+        }
+      },
+      generalKnowledge: {
+        paper1: {
+          chapter1: {
+            topic1: [
+              {
+                id: 8,
+                question: "বাংলাদেশের জাতীয় ফুল কোনটি?",
+                options: { A: "গোলাপ", B: "শাপলা", C: "জুঁই", D: "বেলী" },
+                correct: "B",
+                explanation: `<p>বাংলাদেশের জাতীয় ফুল হলো শাপলা।</p>`
+              }
+            ]
+          }
+        }
+      }
+    };
+
+    let chartInstance = null;
+    let selectedQuestions = [];
+    let timeLeft;
+    let timerInterval;
+
+    function validateLogin() {
+      let userID = document.getElementById("userID").value;
+      let password = document.getElementById("password").value;
+      let errorMessage = document.getElementById("errorMessage");
+
+      let isValid = users.some(user => user.id === userID && user.pass === password);
+
+      if (isValid) {
+        sessionStorage.setItem("isLoggedIn", "true");
+        document.getElementById("loginPage").classList.remove("active");
+        document.getElementById("settingPage").classList.add("active");
+        errorMessage.innerText = "";
+      } else {
+        errorMessage.innerText = "ভুল আইডি বা পাসওয়ার্ড!";
+      }
     }
 
-    function toggleNotifications() {
-      const notificationPanel = document.getElementById('notificationPanel');
-      const menu = document.getElementById('sideMenu');
-      menu.style.left = '-250px';
-      notificationPanel.style.right = notificationPanel.style.right === '0px' ? '-300px' : '0px';
+    function showPopup(id) {
+      document.getElementById(id).style.display = 'block';
     }
 
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        const splash = document.getElementById('splash');
-        splash.classList.add('fade-out');
-      }, 1500);
-    });
+    function closePopup(id) {
+      document.getElementById(id).style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showMedicalStandardPopup() {
+      showPopup('medicalStandardPopup');
+    }
+
+    function toggleDropdown(id) {
+      const content = document.getElementById(id);
+      content.classList.toggle('visible');
+      const btn = content.previousElementSibling;
+      btn.classList.toggle('active');
+    }
+
+    function toggleSubItems(level, element) {
+      const items = document.querySelectorAll(`.sub-items.${level}`);
+      items.forEach(item => {
+        item.style.display = item.style.display === 'none' ? 'block' : 'none';
+      });
+      element.classList.toggle('active');
+    }
+
+    function toggleSelect(level, checked) {
+      const subItems = document.querySelectorAll(`.sub-items.${level} input[type="checkbox"]`);
+      subItems.forEach(cb => {
+        cb.checked = checked;
+        const subLevel = cb.id;
+        const subSubItems = document.querySelectorAll(`.sub-items.${subLevel} input[type="checkbox"]`);
+        subSubItems.forEach(subCb => {
+          subCb.checked = checked;
+        });
+      });
+      updateTopicQuestions();
+    }
+
+    function toggleInputBox(id) {
+      const box = document.getElementById(id);
+      box.classList.toggle('visible');
+      if (id === 'topicQuestionsBox' && box.classList.contains('visible')) {
+        updateTopicQuestions();
+      }
+    }
+
+    function updateTopicQuestions() {
+      const topicQuestionsInputs = document.getElementById('topicQuestionsInputs');
+      topicQuestionsInputs.innerHTML = '';
+      const papers = [
+        { id: 'bioPaper1', label: 'জীববিজ্ঞান প্রথম পত্র', topics: ['bioPaper1Ch1T1', 'bioPaper1Ch2T1'] },
+        { id: 'bioPaper2', label: 'জীববিজ্ঞান দ্বিতীয় পত্র', topics: ['bioPaper2Ch1T1'] },
+        { id: 'chemPaper1', label: 'রসায়ন প্রথম পত্র', topics: ['chemPaper1Ch1T1'] },
+        { id: 'physPaper1', label: 'পদার্থবিজ্ঞান প্রথম পত্র', topics: ['physPaper1Ch1T1'] },
+        { id: 'engPaper1', label: 'ইংরেজি প্রথম পত্র', topics: ['engPaper1Ch1T1'] },
+        { id: 'gkPaper1', label: 'সাধারণ জ্ঞান প্রথম পত্র', topics: ['gkPaper1Ch1T1'] }
+      ];
+
+      papers.forEach(paper => {
+        if (document.getElementById(paper.id)?.checked) {
+          const div = document.createElement('div');
+          div.style.display = 'flex';
+          div.style.justifyContent = 'space-between';
+          div.style.margin = '5px 0';
+          div.innerHTML = `
+            <label>${paper.label}:</label>
+            <input type="number" id="${paper.id}Questions" min="0" style="width: 100px;" data-topics="${paper.topics.join(',')}">
+          `;
+          topicQuestionsInputs.appendChild(div);
+        }
+      });
+    }
+
+    function selectQuestions(questionCounts, isMedical = false) {
+      selectedQuestions = [];
+      const availableQuestions = [];
+
+      const topicMap = {
+        'bioPaper1Ch1T1': ['biology', 'paper1', 'chapter1', 'topic1'],
+        'bioPaper1Ch2T1': ['biology', 'paper1', 'chapter2', 'topic1'],
+        'bioPaper2Ch1T1': ['biology', 'paper2', 'chapter1', 'topic1'],
+        'chemPaper1Ch1T1': ['chemistry', 'paper1', 'chapter1', 'topic1'],
+        'physPaper1Ch1T1': ['physics', 'paper1', 'chapter1', 'topic1'],
+        'engPaper1Ch1T1': ['english', 'paper1', 'chapter1', 'topic1'],
+        'gkPaper1Ch1T1': ['generalKnowledge', 'paper1', 'chapter1', 'topic1']
+      };
+
+      const paperMap = {
+        'bioPaper1': ['bioPaper1Ch1T1', 'bioPaper1Ch2T1'],
+        'bioPaper2': ['bioPaper2Ch1T1'],
+        'chemPaper1': ['chemPaper1Ch1T1'],
+        'physPaper1': ['physPaper1Ch1T1'],
+        'engPaper1': ['engPaper1Ch1T1'],
+        'gkPaper1': ['gkPaper1Ch1T1']
+      };
+
+      if (isMedical) {
+        for (let subject in questions) {
+          for (let paper in questions[subject]) {
+            for (let chapter in questions[subject][paper]) {
+              for (let topic in questions[subject][paper][chapter]) {
+                questions[subject][paper][chapter][topic].forEach(q => {
+                  q.subject = subject;
+                  availableQuestions.push(q);
+                });
+              }
+            }
+          }
+        }
+
+        for (let subject in questionCounts) {
+          const subjectQuestions = availableQuestions.filter(q => q.subject === subject);
+          let count = questionCounts[subject];
+          while (count > 0 && subjectQuestions.length > 0) {
+            const randomIndex = Math.floor(Math.random() * subjectQuestions.length);
+            selectedQuestions.push(subjectQuestions[randomIndex]);
+            subjectQuestions.splice(randomIndex, 1);
+            count--;
+          }
+        }
+      } else {
+        for (let paperId in questionCounts) {
+          if (questionCounts[paperId] > 0) {
+            const topics = paperMap[paperId];
+            topics.forEach(topicId => {
+              const path = topicMap[topicId];
+              if (path && questions[path[0]][path[1]][path[2]][path[3]]) {
+                questions[path[0]][path[1]][path[2]][path[3]].forEach(q => {
+                  q.subject = path[0];
+                  q.topicId = topicId;
+                  q.paperId = paperId;
+                  availableQuestions.push(q);
+                });
+              }
+            });
+          }
+        }
+
+        for (let paperId in questionCounts) {
+          let count = questionCounts[paperId];
+          const paperQuestions = availableQuestions.filter(q => q.paperId === paperId);
+          const topics = paperMap[paperId];
+          const topicCount = topics.length;
+          const questionsPerTopic = Math.floor(count / topicCount);
+          const extraQuestions = count % topicCount;
+
+          topics.forEach((topicId, index) => {
+            let topicQuestions = paperQuestions.filter(q => q.topicId === topicId);
+            let topicCount = questionsPerTopic + (index < extraQuestions ? 1 : 0);
+            while (topicCount > 0 && topicQuestions.length > 0) {
+              const randomIndex = Math.floor(Math.random() * topicQuestions.length);
+              selectedQuestions.push(topicQuestions[randomIndex]);
+              topicQuestions.splice(randomIndex, 1);
+              topicCount--;
+            }
+          });
+        }
+      }
+    }
+
+    function startMedicalExam() {
+      closePopup('medicalStandardPopup');
+      const questionCounts = {
+        biology: 2,
+        chemistry: 1,
+        physics: 1,
+        english: 1,
+        generalKnowledge: 0
+      };
+      timeLeft = 60 * 60;
+      selectQuestions(questionCounts, true);
+      if (selectedQuestions.length > 0) {
+        startExamSession();
+      } else {
+        alert('প্রশ্ন পাওয়া যায়নি! অনুগ্রহ করে অন্য সেটিং বেছে নিন।');
+      }
+    }
+
+    function startExam() {
+      let questionCounts = {};
+      if (document.getElementById('totalQuestionsSwitch').checked) {
+        const total = parseInt(document.getElementById('totalQuestions').value) || 0;
+        if (total > 0) {
+          const selectedPapers = ['bioPaper1', 'bioPaper2', 'chemPaper1', 'physPaper1', 'engPaper1', 'gkPaper1'].filter(id => document.getElementById(id)?.checked);
+          if (selectedPapers.length === 0) {
+            alert('অনুগ্রহ করে অন্তত একটি পত্র নির্বাচন করুন।');
+            return;
+          }
+          const questionsPerPaper = Math.floor(total / selectedPapers.length);
+          const extraQuestions = total % selectedPapers.length;
+          selectedPapers.forEach((paperId, index) => {
+            questionCounts[paperId] = questionsPerPaper + (index < extraQuestions ? 1 : 0);
+          });
+        } else {
+          alert('অনুগ্রহ করে বৈধ প্রশ্ন সংখ্যা প্রবেশ করান।');
+          return;
+        }
+      } else if (document.getElementById('topicQuestionsSwitch').checked) {
+        const papers = ['bioPaper1', 'bioPaper2', 'chemPaper1', 'physPaper1', 'engPaper1', 'gkPaper1'];
+        papers.forEach(paperId => {
+          const input = document.getElementById(`${paperId}Questions`);
+          if (input) {
+            questionCounts[paperId] = parseInt(input.value) || 0;
+          }
+        });
+        if (Object.values(questionCounts).every(count => count === 0)) {
+          alert('অনুগ্রহ করে অন্তত একটি পত্রের জন্য প্রশ্ন সংখ্যা নির্বাচন করুন।');
+          return;
+        }
+      } else {
+        alert('অনুগ্রহ করে প্রশ্ন সংখ্যা নির্বাচনের একটি পদ্ধতি বেছে নিন।');
+        return;
+      }
+
+      timeLeft = (parseInt(document.getElementById('examTime').value) || 60) * 60;
+      selectQuestions(questionCounts, false);
+      if (selectedQuestions.length > 0) {
+        startExamSession();
+      } else {
+        alert('প্রশ্ন পাওয়া যায়নি! অনুগ্রহ করে অন্য সেটিং বেছে নিন।');
+      }
+    }
+
+    function startExamSession() {
+      document.getElementById('settingPage').classList.remove('active');
+      document.getElementById('examContainer').classList.add('active');
+      generateQuestions();
+      startTimer();
+      initializeChart();
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      document.getElementById('timer').innerText = `${toBengaliNumber(minutes)} মিনিট ${toBengaliNumber(seconds)} সেকেন্ড`;
+      if (timeLeft > 0) {
+        timeLeft--;
+      } else {
+        stopTimer();
+        showPopup('confirmPopup');
+      }
+    }
+
+    function stopTimer() {
+      clearInterval(timerInterval);
+    }
+
+    function toBengaliNumber(num) {
+      const bengaliDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+      return num.toString().split('').map(digit => bengaliDigits[parseInt(digit)]).join('');
+    }
+
+    function generateQuestions() {
+      const examContainer = document.querySelector('#exam');
+      examContainer.innerHTML = '';
+      if (selectedQuestions.length === 0) {
+        examContainer.innerHTML = '<p>কোনো প্রশ্ন পাওয়া যায়নি!</p>';
+        return;
+      }
+      selectedQuestions.forEach((question, index) => {
+        const questionDiv = document.createElement('div');
+        questionDiv.classList.add('question-container', 'visible');
+        questionDiv.setAttribute('data-question', question.id);
+        questionDiv.setAttribute('data-correct', question.correct);
+
+        let optionsHTML = '';
+        for (let option in question.options) {
+          optionsHTML += `
+            <label class="option" data-option="${option}">
+              <div class="circle">${option}</div>
+              <span class="option-text">${question.options[option]}</span>
+            </label>
+          `;
+        }
+
+        const explanationHTML = question.explanation
+          ? `<div class="explanation-dropdown">
+               <button class="explanation-btn">ব্যাখ্যা দেখো</button>
+               <div class="explanation-content">
+                 <div class="explanation-label">ব্যাখ্যা:</div>
+                 ${question.explanation}
+               </div>
+             </div>`
+          : '';
+
+        questionDiv.innerHTML = `
+          <p class="question-label">${index + 1}. ${question.question}</p>
+          <div class="options">
+            ${optionsHTML}
+          </div>
+          ${explanationHTML}
+        `;
+        examContainer.appendChild(questionDiv);
+      });
+
+      document.querySelectorAll('.option').forEach(option => {
+        option.addEventListener('click', function () {
+          let parent = this.closest('.question-container');
+          parent.querySelectorAll('.option').forEach(el => el.classList.remove('selected'));
+          this.classList.add('selected');
+        });
+      });
+
+      document.querySelectorAll('.explanation-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const content = this.nextElementSibling;
+          content.classList.toggle('visible');
+          this.classList.toggle('active');
+        });
+      });
+
+      document.getElementById('exam-info').innerText = `পূর্ণ নম্বরঃ ${toBengaliNumber(selectedQuestions.length)}`;
+    }
+
+    function initializeChart() {
+      const ctx = document.getElementById('scoreChart').getContext('2d');
+      chartInstance = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: ['ঠিক উত্তর', 'ভুল উত্তর', 'অনুত্তরিত'],
+          datasets: [{
+            data: [0, 0, 0],
+            backgroundColor: ['#34c759', '#ff3b30', '#007aff'],
+            borderColor: '#fff',
+            borderWidth: 2,
+            hoverOffset: 10
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '10%',
+          layout: {
+            padding: 10
+          },
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                font: {
+                  family: '"Hind Siliguri", sans-serif',
+                  size: 13,
+                  weight: 'bold'
+                },
+                color: '#333',
+                padding: 12,
+                boxWidth: 14,
+                generateLabels: (chart) => {
+                  const data = chart.data;
+                  return data.labels.map((label, i) => ({
+                    text: label,
+                    font: {
+                      family: '"Hind Siliguri", sans-serif'
+                    },
+                    fillStyle: data.datasets[0].backgroundColor[i],
+                    hidden: !chart.getDataVisibility(i),
+                    index: i
+                  }));
+                }
+              }
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0, 0, 0, 0.9)',
+              cornerRadius: 6,
+              titleFont: {
+                family: '"Hind Siliguri", sans-serif',
+                size: 14,
+                weight: 'bold'
+              },
+              bodyFont: {
+                family: '"Hind Siliguri", sans-serif',
+                size: 13
+              },
+              padding: 10,
+              boxPadding: 5
+            }
+          },
+          animation: {
+            animateScale: true,
+            animateRotate: true,
+            duration: 1000,
+            easing: 'easeOutQuart'
+          },
+          elements: {
+            arc: {
+              borderRadius: 8
+            }
+          },
+          onClick: (e, elements) => {
+            if (elements.length > 0) {
+              const index = elements[0].index;
+              const filter = ['correct', 'wrong', 'unanswered'][index];
+              filterQuestions(filter);
+            } else {
+              filterQuestions('all');
+            }
+          }
+        }
+      });
+    }
+
+    function filterQuestions(type) {
+      document.querySelectorAll('.question-container').forEach(question => {
+        const status = question.getAttribute('data-status');
+        if (type === 'all' || status === type) {
+          question.classList.add('visible');
+        } else {
+          question.classList.remove('visible');
+        }
+      });
+    }
+
+    function confirmSubmit() {
+      closePopup('confirmPopup');
+      stopTimer();
+      document.getElementById('submitBtn').style.display = 'none'; // Hide submit button
+      let total = selectedQuestions.length;
+      let answered = 0;
+      let correct = 0;
+      let wrong = 0;
+      let unanswered = 0;
+
+      document.querySelectorAll('.question-container').forEach(question => {
+        const selectedOption = question.querySelector('.option.selected');
+        const correctAnswer = question.getAttribute('data-correct');
+        if (selectedOption) {
+          answered++;
+          const selectedValue = selectedOption.getAttribute('data-option');
+          if (selectedValue === correctAnswer) {
+            correct++;
+            question.setAttribute('data-status', 'correct');
+            selectedOption.querySelector('.option-text').classList.add('correct-text');
+          } else {
+            wrong++;
+            question.setAttribute('data-status', 'wrong');
+            selectedOption.querySelector('.option-text').classList.add('incorrect-text');
+            const correctOption = question.querySelector(`.option[data-option="${correctAnswer}"]`);
+            if (correctOption) {
+              correctOption.querySelector('.option-text').classList.add('correct-text');
+            }
+          }
+        } else {
+          unanswered++;
+          question.setAttribute('data-status', 'unanswered');
+          const correctOption = question.querySelector(`.option[data-option="${correctAnswer}"]`);
+          if (correctOption) {
+            correctOption.querySelector('.option-text').classList.add('correct-text');
+          }
+        }
+        const explanation = question.querySelector('.explanation-dropdown');
+        if (explanation) {
+          explanation.classList.add('visible');
+        }
+      });
+
+      let score = correct;
+      chartInstance.data.datasets[0].data = [correct, wrong, unanswered];
+      chartInstance.update();
+      document.querySelector('.chart-container').classList.add('visible');
+
+      document.getElementById('totalQuestions').innerText = toBengaliNumber(total);
+      document.getElementById('answered').innerText = toBengaliNumber(answered);
+      document.getElementById('correctAnswers').innerText = toBengaliNumber(correct);
+      document.getElementById('wrongAnswers').innerText = toBengaliNumber(wrong);
+      document.getElementById('unanswered').innerText = toBengaliNumber(unanswered);
+      document.getElementById('finalScore').innerText = toBengaliNumber(score);
+
+      showPopup('scorePopup');
+    }
   </script>
-
 </body>
 
 </html>
